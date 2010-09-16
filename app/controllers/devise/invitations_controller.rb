@@ -26,6 +26,13 @@ class Devise::InvitationsController < ApplicationController
   
   # GET /resources/invitation/accept?invitation_token=abcdef
   def edit
+    user = resource_class.find_by_id(params[:format])
+    if user
+      if !user.invitation_token && user.encrypted_password
+        redirect_to :new_user_session
+        return
+      end
+    end
     self.resource = resource_class.find_or_initialize_with_error_by(:invitation_token, params[:invitation_token])
     render_with_scope :edit
   end
